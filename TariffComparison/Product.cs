@@ -4,23 +4,6 @@
 
     public class Product
     {
-        #region constructors
-
-        public Product(string name, decimal costPerUnit)
-            : this(name, costPerUnit, 0)
-        {
-        }
-
-        private Product(string name, decimal costPerUnit, int baseCostPerBillingPeriod)
-            : this(name, costPerUnit, baseCostPerBillingPeriod, 0)
-        {
-        }
-
-        private Product(string name, decimal costPerUnit, int baseCostPerBillingPeriod, int amountIncludedIntoBaseCost)
-            : this(name, costPerUnit, baseCostPerBillingPeriod, amountIncludedIntoBaseCost, 12)
-        {
-        }
-
         public Product(string name, decimal costPerUnit, decimal baseCostPerBillingPeriod, decimal amountIncludedIntoBaseCost, int numberOfBillingPeriodsPerYear)
         {
             Name = name;
@@ -29,8 +12,6 @@
             AmountIncludedIntoBaseCost = amountIncludedIntoBaseCost;
             NumberOfBillingPeriodsPerYear = numberOfBillingPeriodsPerYear;
         }
-
-        #endregion constructors
 
         #region fields
 
@@ -46,27 +27,24 @@
 
         #endregion fields
 
-        #region calculated fields
-
-        public decimal BaseCostPerYear
-        {
-            get
-            {
-                return BaseCostPerBillingPeriod * NumberOfBillingPeriodsPerYear;
-            }
-        }
-
-        #endregion calculated fields
+        #region cost calculation methods
 
         public decimal CalculateYearlyCostForConsumption(decimal consumption)
         {
-            return BaseCostPerYear + CalculateAdditionalConsumptionCostPerYear(consumption);
+            return GetBaseCostPerYear() + CalculateAdditionalConsumptionCostPerYear(consumption);
+        }
+
+        private decimal GetBaseCostPerYear()
+        {
+            return BaseCostPerBillingPeriod * NumberOfBillingPeriodsPerYear;
         }
 
         private decimal CalculateAdditionalConsumptionCostPerYear(decimal consumption)
         {
-            var billableConsumption = Math.Max(AmountIncludedIntoBaseCost - consumption, 0);
+            var billableConsumption = Math.Max(consumption - AmountIncludedIntoBaseCost, 0);
             return billableConsumption * CostPerUnit;
         }
+
+        #endregion cost calculation methods
     }
 }

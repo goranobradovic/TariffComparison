@@ -1,21 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace TariffComparison
+﻿namespace TariffComparison
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class Comparison
     {
-        private readonly IQueryable<Product> _selectedProducts;
+        private readonly IEnumerable<Product> _selectedProducts;
 
-        public Comparison(IQueryable<Product> selectedProducts)
+        public Comparison(IEnumerable<Product> selectedProducts)
         {
             _selectedProducts = selectedProducts;
         }
 
-        public ICollection<ComparisonResult> CompareProductsForConsumption(decimal consumptionAmount)
+        public IEnumerable<ComparisonResult> CompareProductsForAnnualConsumption(decimal consumption)
         {
-            return _selectedProducts.Select(product=> product.Calculate)
+            return (from product in _selectedProducts
+                    select new ComparisonResult(product, product.CalculateYearlyCostForConsumption(consumption)))
+                .OrderBy(comparisonResult => comparisonResult.AnnualCosts);
         }
     }
 }
